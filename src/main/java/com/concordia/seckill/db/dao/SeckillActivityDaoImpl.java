@@ -2,10 +2,10 @@ package com.concordia.seckill.db.dao;
 
 import com.concordia.seckill.db.mappers.SeckillActivityMapper;
 import com.concordia.seckill.db.po.SeckillActivity;
-import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Repository
 public class SeckillActivityDaoImpl implements SeckillActivityDao{
@@ -19,7 +19,7 @@ public class SeckillActivityDaoImpl implements SeckillActivityDao{
     }
 
     @Override
-    public void inertSeckillActivity(SeckillActivity seckillActivity) {
+    public void insertSeckillActivity(SeckillActivity seckillActivity) {
         seckillActivityMapper.insert(seckillActivity);
     }
 
