@@ -4,6 +4,7 @@ import com.concordia.seckill.db.dao.SeckillActivityDao;
 import com.concordia.seckill.db.dao.SeckillCommodityDao;
 import com.concordia.seckill.db.po.SeckillActivity;
 import com.concordia.seckill.db.po.SeckillCommodity;
+import com.concordia.seckill.util.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,9 @@ public class SeckillActivityController {
 
     @Autowired
     private SeckillCommodityDao seckillCommodityDao;
+
+    @Autowired
+    private RedisService redisService;
 
     @RequestMapping("/addSeckillActivity")
     public String addSeckillActivity() {
@@ -63,6 +67,9 @@ public class SeckillActivityController {
     @RequestMapping("/seckills")
     public String activityList(Map<String, Object> resultMap) {
         List<SeckillActivity> seckillActivities = seckillActivityDao.querySeckillActivitysByStatus(1);
+        for (SeckillActivity seckillActivity : seckillActivities) {
+            redisService.setValue("stock:" + seckillActivity.getId(), (long) seckillActivity.getAvailableStock());
+        }
         resultMap.put("seckillActivities", seckillActivities);
         return "seckill_activity";
     }
