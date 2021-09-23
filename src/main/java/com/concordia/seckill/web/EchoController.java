@@ -1,4 +1,4 @@
-package com.concordia.seckill.controller;
+package com.concordia.seckill.web;
 
 
 import org.springframework.web.bind.annotation.GetMapping;

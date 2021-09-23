@@ -7,7 +7,7 @@ public interface SeckillActivityDao {
 
     public List<SeckillActivity> querySeckillActivitysByStatus(int activityStatus);
 
-    public void inertSeckillActivity(SeckillActivity seckillActivity);
+    public void insertSeckillActivity(SeckillActivity seckillActivity);
 
     public SeckillActivity querySeckillActivityById(long activityId);
 
