@@ -26,12 +26,20 @@ public class RedisDemoTests {
 
     @Test
     public void stockTest() {
-        redisService.setValue("stock:19", 10L);
+        redisService.setValue("stock:12", 10L);
     }
 
     @Test
     public void getStockTest() {
-        String stock = redisService.getValue("stock:19");
+        String stock = redisService.getValue("stock:12");
         System.out.println(stock);
+    }
+
+    @Test
+    public void stockDeductValidatorTest() {
+        boolean result = redisService.stockDeductValidator("stock:12");
+        System.out.println("result:" + result);
+        String stock = redisService.getValue("stock:12");
+        System.out.println("stock:" + stock);
     }
 }
