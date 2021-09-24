@@ -40,24 +40,4 @@ public class SeckillCommodity {
     public void setCommodityPrice(Integer commodityPrice) {
         this.commodityPrice = commodityPrice;
     }
-
-    public SeckillCommodity(Long id, String commodityName, String commodityDesc, Integer commodityPrice) {
-        this.id = id;
-        this.commodityName = commodityName;
-        this.commodityDesc = commodityDesc;
-        this.commodityPrice = commodityPrice;
-    }
-
-    public SeckillCommodity() {
-    }
-
-    @Override
-    public String toString() {
-        return "SeckillCommodity{" +
-                "id=" + id +
-                ", commodityName='" + commodityName + '\'' +
-                ", commodityDesc='" + commodityDesc + '\'' +
-                ", commodityPrice=" + commodityPrice +
-                '}';
-    }
 }

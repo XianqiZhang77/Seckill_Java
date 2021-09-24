@@ -2,7 +2,6 @@ package com.concordia.seckill.db.po;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 
 public class SeckillActivity {
     private Long id;
@@ -114,50 +113,4 @@ public class SeckillActivity {
     public void setLockStock(Long lockStock) {
         this.lockStock = lockStock;
     }
-
-    public SeckillActivity(Long id, String name, Long commodityId, BigDecimal oldPrice, BigDecimal seckillPrice,
-                           Integer activityStatus, Date startTime, Date endTime,
-                           Long totalStock, Integer availableStock, Long lockStock) {
-        this.id = id;
-        this.name = name;
-        this.commodityId = commodityId;
-        this.oldPrice = oldPrice;
-        this.seckillPrice = seckillPrice;
-        this.activityStatus = activityStatus;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.totalStock = totalStock;
-        this.availableStock = availableStock;
-        this.lockStock = lockStock;
-    }
-
-    public SeckillActivity() {
-
-    }
-
-    @Override
-    public String toString() {
-        return "SeckillActivity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", commodityId=" + commodityId +
-                ", oldPrice=" + oldPrice +
-                ", seckillPrice=" + seckillPrice +
-                ", activityStatus=" + activityStatus +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", totalStock=" + totalStock +
-                ", availableStock=" + availableStock +
-                ", lockStock=" + lockStock +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SeckillActivity that = (SeckillActivity) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(commodityId, that.commodityId) && Objects.equals(oldPrice, that.oldPrice) && Objects.equals(seckillPrice, that.seckillPrice) && Objects.equals(activityStatus, that.activityStatus) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime) && Objects.equals(totalStock, that.totalStock) && Objects.equals(availableStock, that.availableStock) && Objects.equals(lockStock, that.lockStock);
-    }
-
 }
