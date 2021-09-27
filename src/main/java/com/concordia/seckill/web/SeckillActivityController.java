@@ -1,5 +1,6 @@
 package com.concordia.seckill.web;
 
+import com.concordia.seckill.db.dao.OrderDao;
 import com.concordia.seckill.db.dao.SeckillActivityDao;
 import com.concordia.seckill.db.dao.SeckillCommodityDao;
 import com.concordia.seckill.db.po.Order;
@@ -36,6 +37,9 @@ public class SeckillActivityController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    OrderDao orderDao;
 
     @RequestMapping("/addSeckillActivity")
     public String addSeckillActivity() {
@@ -119,5 +123,35 @@ public class SeckillActivityController {
         }
         modelAndView.setViewName("seckill_result");
         return modelAndView;
+    }
+
+    /**
+     * 订单查询
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("/seckill/orderQuery/{orderNo}")
+    public ModelAndView orderQuery(@PathVariable String orderNo) {
+        log.info("订单查询，订单号：" + orderNo);
+        Order order = orderDao.queryOrder(orderNo);
+        ModelAndView modelAndView = new ModelAndView();
+        if (order != null) {
+            modelAndView.setViewName("order");
+            modelAndView.addObject("order", order);
+            SeckillActivity seckillActivity =
+                    seckillActivityDao.querySeckillActivityById(order.getSeckillActivityId());
+            modelAndView.addObject("seckillActivity", seckillActivity);
+
+        } else {
+            modelAndView.setViewName("order_wait");
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping("/seckill/payOrder/{orderNo}")
+    public String payorder(@PathVariable String orderNo) throws Exception {
+        seckillActivityService.payOrderProcess(orderNo);
+        return "redirect:/seckill/orderQuery/" + orderNo;
     }
 }

@@ -1,16 +1,21 @@
 package com.concordia.seckill.services;
 
 import com.alibaba.fastjson.JSON;
+import com.concordia.seckill.db.dao.OrderDao;
 import com.concordia.seckill.db.dao.SeckillActivityDao;
 import com.concordia.seckill.db.po.Order;
 import com.concordia.seckill.db.po.SeckillActivity;
 import com.concordia.seckill.mq.RocketMQService;
 import com.concordia.seckill.util.RedisService;
 import com.concordia.seckill.util.SnowFlake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
+@Slf4j
 public class SeckillActivityService {
     @Autowired
     private RedisService redisService;
@@ -18,6 +23,8 @@ public class SeckillActivityService {
     private SeckillActivityDao seckillActivityDao;
     @Autowired
     private RocketMQService rocketMQService;
+    @Autowired
+    private OrderDao orderDao;
 
     /**
      * 判断商品是否还有库存 * @param activityId 商品ID * @return
@@ -36,6 +43,7 @@ public class SeckillActivityService {
 
     /**
      * 创建订单
+     *
      * @param seckillActivityId
      * @param userId
      * @return
@@ -56,4 +64,16 @@ public class SeckillActivityService {
     }
 
 
+    public void payOrderProcess(String orderNo) {
+        log.info("完成支付订单 订单号：" + orderNo);
+        Order order = orderDao.queryOrder(orderNo);
+        boolean deductStockResult = seckillActivityDao
+                .deductStock(order.getSeckillActivityId());
+        if (deductStockResult) {
+            order.setPayTime(new Date());
+            // 订单状态 0、没有可用库存，无效订单 1、已创建等待支付 2、完成支付
+            order.setOrderStatus(2);
+            orderDao.updateOrder(order);
+        }
+    }
 }
