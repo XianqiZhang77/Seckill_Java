@@ -1,6 +1,7 @@
 package com.concordia.seckill.db.dao;
 
 import com.concordia.seckill.db.po.SeckillActivity;
+
 import java.util.List;
 
 public interface SeckillActivityDao {
