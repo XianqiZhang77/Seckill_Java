@@ -106,6 +106,12 @@ public class SeckillActivityController {
         boolean stockValidateResult = false;
         ModelAndView modelAndView = new ModelAndView();
         try {
+            /* 判断用户是否在已购名单中 */
+            if (redisService.isInLimitMember(seckillActivityId, userId)) {
+                modelAndView.addObject("resultInfo", "对不起，您已经在限购名单中");
+                modelAndView.setViewName("seckill_result");
+                return modelAndView;
+            }
             /* 确认是否能够进行秒杀 */
             stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
             if (stockValidateResult) {
@@ -113,6 +119,8 @@ public class SeckillActivityController {
                 modelAndView.addObject("resultInfo",
                         "秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
                 modelAndView.addObject("orderNo", order.getOrderNo());
+                //添加用户到已购名单中
+                redisService.addLimitMember(seckillActivityId, userId);
 
             } else {
                 modelAndView.addObject("resultInfo", "对不起，商品库存不足");
