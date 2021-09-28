@@ -180,4 +180,10 @@
         SET lock_stock = lock_stock - 1
         WHERE id = #{id,jdbcType=BIGINT}
     </update>
+    <update id="revertStock" parameterType="java.lang.Long">
+        UPDATE seckill_activity
+        SET lock_stock = lock_stock + 1,
+            available_stock = available_stock + 1
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>
