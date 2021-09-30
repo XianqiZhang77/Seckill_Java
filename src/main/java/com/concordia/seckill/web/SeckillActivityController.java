@@ -1,5 +1,6 @@
 package com.concordia.seckill.web;
 
+import com.alibaba.fastjson.JSON;
 import com.concordia.seckill.db.dao.OrderDao;
 import com.concordia.seckill.db.dao.SeckillActivityDao;
 import com.concordia.seckill.db.dao.SeckillCommodityDao;
@@ -9,16 +10,19 @@ import com.concordia.seckill.db.po.SeckillCommodity;
 import com.concordia.seckill.services.SeckillActivityService;
 import com.concordia.seckill.util.RedisService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -88,8 +92,25 @@ public class SeckillActivityController {
 
     @RequestMapping("/item/{seckillActivityId}")
     public String itemPage(Map<String, Object> resultMap, @PathVariable long seckillActivityId) {
-        SeckillActivity seckillActivity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
-        SeckillCommodity seckillCommodity = seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        SeckillActivity seckillActivity;
+        SeckillCommodity seckillCommodity;
+
+        String seckillActivityInfo = redisService.getValue("seckillActivity:" + seckillActivityId);
+        if (StringUtils.isNotEmpty(seckillActivityInfo)) {
+            log.info("redis缓存数据" + seckillActivityInfo);
+            seckillActivity = JSON.parseObject(seckillActivityInfo, SeckillActivity.class);
+        } else {
+            seckillActivity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
+        }
+
+        String seckillCommodityInfo = redisService.getValue("seckillCommodity:" + seckillActivity.getCommodityId());
+        if (StringUtils.isNotEmpty(seckillCommodityInfo)) {
+            log.info("redis缓存数据" + seckillCommodityInfo);
+            seckillCommodity = JSON.parseObject(seckillCommodityInfo, SeckillCommodity.class);
+        } else {
+            seckillCommodity = seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        }
+
         resultMap.put("seckillActivity", seckillActivity);
         resultMap.put("seckillCommodity", seckillCommodity);
         resultMap.put("seckillPrice", seckillActivity.getSeckillPrice());
@@ -161,5 +182,16 @@ public class SeckillActivityController {
     public String payorder(@PathVariable String orderNo) throws Exception {
         seckillActivityService.payOrderProcess(orderNo);
         return "redirect:/seckill/orderQuery/" + orderNo;
+    }
+
+    /*** 获取当前服务器端的时间 * @return */
+    @ResponseBody
+    @RequestMapping("/seckill/getSystemTime")
+    public String getSystemTime() {
+        //设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // new Date()为获取当前系统时间
+        String date = df.format(new Date());
+        return date;
     }
 }
