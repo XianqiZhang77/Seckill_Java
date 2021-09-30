@@ -3,8 +3,10 @@ package com.concordia.seckill.services;
 import com.alibaba.fastjson.JSON;
 import com.concordia.seckill.db.dao.OrderDao;
 import com.concordia.seckill.db.dao.SeckillActivityDao;
+import com.concordia.seckill.db.dao.SeckillCommodityDao;
 import com.concordia.seckill.db.po.Order;
 import com.concordia.seckill.db.po.SeckillActivity;
+import com.concordia.seckill.db.po.SeckillCommodity;
 import com.concordia.seckill.mq.RocketMQService;
 import com.concordia.seckill.util.RedisService;
 import com.concordia.seckill.util.SnowFlake;
@@ -25,6 +27,8 @@ public class SeckillActivityService {
     private RocketMQService rocketMQService;
     @Autowired
     private OrderDao orderDao;
+    @Autowired
+    private SeckillCommodityDao seckillCommodityDao;
 
     /**
      * 判断商品是否还有库存 * @param activityId 商品ID * @return
@@ -99,5 +103,13 @@ public class SeckillActivityService {
          *发送订单付款成功消息
          */
         rocketMQService.sendMessage("pay_done", JSON.toJSONString(order));
+    }
+
+    /*** 将秒杀详情相关信息倒入redis * @param seckillActivityId */
+    public void pushSeckillInfoToRedis(long seckillActivityId) {
+        SeckillActivity seckillActivity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
+        redisService.setValue("seckillActivity:" + seckillActivityId, JSON.toJSONString(seckillActivity));
+        SeckillCommodity seckillCommodity = seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        redisService.setValue("seckillCommodity:" + seckillActivity.getCommodityId(), JSON.toJSONString(seckillCommodity));
     }
 }
