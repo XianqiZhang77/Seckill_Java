@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 @SpringBootTest
 public class RedisDemoTests {
@@ -58,6 +59,22 @@ public class RedisDemoTests {
         System.out.println(seckillActivityInfo);
 
         String seckillCommodityInfo = redisService.getValue("seckillCommodity:" + 1001);
-        System.out.println(seckillCommodityInfo );
+        System.out.println(seckillCommodityInfo);
+    }
+
+    /*** 测试高并发下获取锁的结果 */
+    @Test
+    public void testConcurrentAddLock() {
+//        for (int i = 0; i < 10; i++) {
+//            String requestId = UUID.randomUUID().toString();
+//            // 打印结果 true false false false false false false false false false
+//            // 只有第一个能获得 锁
+//            System.out.println(redisService.tryGetDistributedLock("A", requestId, 1000));
+//        }
+        for (int i = 0; i < 10; i++) {
+            String requestId = UUID.randomUUID().toString();
+            System.out.println(redisService.tryGetDistributedLock("A", requestId, 1000));
+            redisService.releaseDistributedLock("A", requestId);
+        }
     }
 }
